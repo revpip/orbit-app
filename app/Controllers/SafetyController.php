@@ -73,7 +73,7 @@ final class SafetyController
     public function thanks(): void
     {
         $this->requireUser();
-        View::render('safety/thanks', ['title' => 'Thank you']);
+        View::render('safety/done', ['title' => 'Thank you']);
     }
 
     private function requireUser(): int
