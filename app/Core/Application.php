@@ -7,6 +7,8 @@ namespace Orbit\Core;
 use Orbit\Controllers\AuthController;
 use Orbit\Controllers\HomeController;
 use Orbit\Controllers\OnboardingController;
+use Orbit\Controllers\PsychologyController;
+use Orbit\Controllers\SuggestionController;
 
 final class Application
 {
@@ -22,6 +24,9 @@ final class Application
             ['POST', '/onboarding/profile'] => (new OnboardingController())->saveProfile(),
             ['GET', '/onboarding/intents'] => (new OnboardingController())->intents(),
             ['POST', '/onboarding/intents'] => (new OnboardingController())->saveIntents(),
+            ['GET', '/onboarding/psychology'] => (new PsychologyController())->edit(),
+            ['POST', '/onboarding/psychology'] => (new PsychologyController())->save(),
+            ['GET', '/matches'] => (new SuggestionController())->index(),
             ['GET', '/register'] => (new AuthController())->showRegister(),
             ['POST', '/register'] => (new AuthController())->register(),
             ['GET', '/login'] => (new AuthController())->showLogin(),
