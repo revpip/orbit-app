@@ -6,8 +6,10 @@ namespace Orbit\Core;
 
 use Orbit\Controllers\AuthController;
 use Orbit\Controllers\HomeController;
+use Orbit\Controllers\ModerationController;
 use Orbit\Controllers\OnboardingController;
 use Orbit\Controllers\PsychologyController;
+use Orbit\Controllers\SafetyController;
 use Orbit\Controllers\SuggestionController;
 
 final class Application
@@ -27,6 +29,11 @@ final class Application
             ['GET', '/onboarding/psychology'] => (new PsychologyController())->edit(),
             ['POST', '/onboarding/psychology'] => (new PsychologyController())->save(),
             ['GET', '/matches'] => (new SuggestionController())->index(),
+            ['GET', '/safety/report'] => (new SafetyController())->reportForm(),
+            ['POST', '/safety/report'] => (new SafetyController())->submitReport(),
+            ['POST', '/safety/block'] => (new SafetyController())->block(),
+            ['GET', '/safety/thanks'] => (new SafetyController())->thanks(),
+            ['GET', '/moderation'] => (new ModerationController())->queue(),
             ['GET', '/register'] => (new AuthController())->showRegister(),
             ['POST', '/register'] => (new AuthController())->register(),
             ['GET', '/login'] => (new AuthController())->showLogin(),
