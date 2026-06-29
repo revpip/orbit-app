@@ -26,7 +26,8 @@ foreach ($allIntents as $intent) {
         <p>No intents selected yet. <a href="/onboarding/intents">Choose yours</a>.</p>
     <?php endif; ?>
 
-    <p><a href="/onboarding/profile">Edit profile</a> | <a href="/onboarding/intents">Edit intents</a></p>
+    <p><a href="/matches">View suggestions</a></p>
+    <p><a href="/onboarding/profile">Edit profile</a> | <a href="/onboarding/intents">Edit intents</a> | <a href="/onboarding/psychology">Edit connection style</a></p>
 
     <form method="post" action="/logout">
         <?php echo \Orbit\Security\Csrf::field(); ?>
