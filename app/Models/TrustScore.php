@@ -20,30 +20,39 @@ final class TrustScore
         }
 
         self::createDefault($userId);
-
-        return [
-            'user_id' => $userId,
-            'score' => 50,
-            'verification_score' => 0,
-            'behaviour_score' => 50,
-            'reliability_score' => 50,
-            'report_penalty' => 0,
-        ];
+        return self::forUser($userId);
     }
 
     public static function createDefault(int $userId): void
     {
-        $stmt = Database::connection()->prepare('INSERT IGNORE INTO trust_scores (user_id) VALUES (:user_id)');
+        $stmt = Database::connection()->prepare(
+            'INSERT IGNORE INTO trust_scores (user_id, score, verification_score, behaviour_score, reliability_score, flag_penalty) VALUES (:user_id, 50, 0, 50, 50, 0)'
+        );
         $stmt->execute(['user_id' => $userId]);
     }
 
-    public static function applyReportPenalty(int $userId, int $penalty = 5): void
+    public static function recalculate(int $userId): void
     {
-        self::createDefault($userId);
+        $flagCountStmt = Database::connection()->prepare('SELECT COUNT(*) FROM user_flags WHERE target_user_id = :user_id AND status IN ("open", "reviewing")');
+        $flagCountStmt->execute(['user_id' => $userId]);
+        $flagPenalty = min(40, ((int) $flagCountStmt->fetchColumn()) * 10);
+
+        $verificationStmt = Database::connection()->prepare('SELECT COUNT(*) FROM verifications WHERE user_id = :user_id AND status = "approved"');
+        $verificationStmt->execute(['user_id' => $userId]);
+        $verificationScore = min(30, ((int) $verificationStmt->fetchColumn()) * 10);
+
+        $score = max(0, min(100, 50 + $verificationScore - $flagPenalty));
 
         $stmt = Database::connection()->prepare(
-            'UPDATE trust_scores SET report_penalty = LEAST(100, report_penalty + :penalty), score = GREATEST(0, score - :penalty) WHERE user_id = :user_id'
+            'INSERT INTO trust_scores (user_id, score, verification_score, behaviour_score, reliability_score, flag_penalty)
+             VALUES (:user_id, :score, :verification_score, 50, 50, :flag_penalty)
+             ON DUPLICATE KEY UPDATE score = VALUES(score), verification_score = VALUES(verification_score), flag_penalty = VALUES(flag_penalty)'
         );
-        $stmt->execute(['user_id' => $userId, 'penalty' => $penalty]);
+        $stmt->execute([
+            'user_id' => $userId,
+            'score' => $score,
+            'verification_score' => $verificationScore,
+            'flag_penalty' => $flagPenalty,
+        ]);
     }
 }
