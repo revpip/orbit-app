@@ -15,6 +15,7 @@ $matches = $matches ?? [];
             <h2><?php echo e($match['display_name']); ?> · <?php echo (int) $match['compatibility_score']; ?>%</h2>
             <p><strong><?php echo e($match['headline'] ?? ''); ?></strong></p>
             <p><?php echo e($match['town'] ?? ''); ?> <?php echo e($match['postcode_prefix'] ?? ''); ?></p>
+            <p><strong>Trust score:</strong> <?php echo (int) ($match['trust_score'] ?? 50); ?>/100</p>
             <p><?php echo e($match['reason_summary']); ?></p>
             <p><a href="/safety/report?user_id=<?php echo (int) $match['user_id']; ?>">Report concern</a></p>
             <form method="post" action="/safety/block">
