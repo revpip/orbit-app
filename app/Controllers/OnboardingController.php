@@ -82,7 +82,7 @@ final class OnboardingController
         }
 
         Intent::syncForUser($userId, $intentIds);
-        Redirect::to('/dashboard');
+        Redirect::to('/onboarding/psychology');
     }
 
     private function requireUser(): int
