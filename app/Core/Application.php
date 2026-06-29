@@ -6,6 +6,7 @@ namespace Orbit\Core;
 
 use Orbit\Controllers\AuthController;
 use Orbit\Controllers\HomeController;
+use Orbit\Controllers\OnboardingController;
 
 final class Application
 {
@@ -17,6 +18,10 @@ final class Application
         match ([$method, $path]) {
             ['GET', '/'], ['GET', '/home'] => (new HomeController())->index(),
             ['GET', '/dashboard'] => (new HomeController())->memberHome(),
+            ['GET', '/onboarding/profile'] => (new OnboardingController())->profile(),
+            ['POST', '/onboarding/profile'] => (new OnboardingController())->saveProfile(),
+            ['GET', '/onboarding/intents'] => (new OnboardingController())->intents(),
+            ['POST', '/onboarding/intents'] => (new OnboardingController())->saveIntents(),
             ['GET', '/register'] => (new AuthController())->showRegister(),
             ['POST', '/register'] => (new AuthController())->register(),
             ['GET', '/login'] => (new AuthController())->showLogin(),
