@@ -6,7 +6,7 @@ namespace Orbit\Core;
 
 final class View
 {
-    public static function render(string $view, array $data = [], string $layout = 'app'): void
+    public static function render(string $view, array $data = [], string $layout = 'main'): void
     {
         $viewPath = dirname(__DIR__) . '/Views/' . $view . '.php';
         $layoutPath = dirname(__DIR__) . '/Views/layouts/' . $layout . '.php';
