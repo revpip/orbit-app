@@ -17,11 +17,11 @@ final class Report
         $stmt->execute([
             'reporter_id' => $reporterId,
             'reported_user_id' => $reportedUserId,
-            'reason' => $reason,
-            'details' => $details,
+            'reason' => trim($reason),
+            'details' => trim($details),
         ]);
 
-        TrustScore::applyReportPenalty($reportedUserId, 3);
+        TrustScore::recalculate($reportedUserId);
     }
 
     public static function openReports(): array
