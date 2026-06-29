@@ -19,15 +19,26 @@ final class MatchSuggestion
         }
 
         $stmt = Database::connection()->prepare(
-            'SELECT u.id AS user_id, u.display_name, p.headline, p.bio, p.town, p.postcode_prefix, pp.*
+            'SELECT u.id AS user_id, u.display_name, p.headline, p.bio, p.town, p.postcode_prefix, pp.*, COALESCE(ts.score, 50) AS trust_score
              FROM users u
              INNER JOIN profiles p ON p.user_id = u.id
              INNER JOIN psychology_profiles pp ON pp.user_id = u.id
-             WHERE u.id <> :user_id AND u.status = "active"
+             LEFT JOIN trust_scores ts ON ts.user_id = u.id
+             WHERE u.id <> :user_id
+               AND u.status = "active"
+               AND NOT EXISTS (
+                    SELECT 1 FROM user_blocks b
+                    WHERE (b.blocker_id = :user_id_block_a AND b.blocked_user_id = u.id)
+                       OR (b.blocker_id = u.id AND b.blocked_user_id = :user_id_block_b)
+               )
              ORDER BY u.created_at DESC
              LIMIT 50'
         );
-        $stmt->execute(['user_id' => $userId]);
+        $stmt->execute([
+            'user_id' => $userId,
+            'user_id_block_a' => $userId,
+            'user_id_block_b' => $userId,
+        ]);
 
         $service = new CompatibilityService();
         $matches = [];
