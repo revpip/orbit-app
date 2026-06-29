@@ -58,7 +58,7 @@ final class AuthController
 
         $userId = User::create($email, $displayName, $password);
         Auth::login($userId);
-        Redirect::to('/dashboard');
+        Redirect::to('/onboarding/profile');
     }
 
     public function showLogin(): void
