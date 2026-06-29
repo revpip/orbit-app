@@ -4,23 +4,27 @@ declare(strict_types=1);
 
 namespace Orbit\Core;
 
+use Orbit\Controllers\AuthController;
+use Orbit\Controllers\HomeController;
+
 final class Application
 {
     public function run(): void
     {
+        $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
         $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
-        match ($path) {
-            '/', '/home' => $this->home(),
-            '/health' => $this->health(),
+        match ([$method, $path]) {
+            ['GET', '/'], ['GET', '/home'] => (new HomeController())->index(),
+            ['GET', '/dashboard'] => (new HomeController())->memberHome(),
+            ['GET', '/register'] => (new AuthController())->showRegister(),
+            ['POST', '/register'] => (new AuthController())->register(),
+            ['GET', '/login'] => (new AuthController())->showLogin(),
+            ['POST', '/login'] => (new AuthController())->login(),
+            ['POST', '/logout'] => (new AuthController())->logout(),
+            ['GET', '/health'] => $this->health(),
             default => $this->notFound(),
         };
-    }
-
-    private function home(): void
-    {
-        http_response_code(200);
-        echo '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ORBIT App</title></head><body><main style="font-family:system-ui;max-width:760px;margin:10vh auto;padding:24px"><h1>ORBIT App</h1><p>Pure PHP 8.4 member platform foundation is running.</p><p><a href="/health">Health check</a></p></main></body></html>';
     }
 
     private function health(): void
